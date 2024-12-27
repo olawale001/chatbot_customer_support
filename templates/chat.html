@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+</head>
+<body>
+    <h1>Chatbot</h1>
+    <div id="chatbox"></div>
+    <input id="message" placeholder="type your message" />
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        async function sendMessage() {
+            const message = document.getElementById("message").value;
+            const response = await fetch('/api/chatbot/chat/', {
+                method: 'POST',
+                body: new URLSearchParams({message}),
+                headers: { 'Content-type': 'application/x-www-form-urlencoded'}
+            });
+            const data = await response.json();
+            document.getElementById('chatbox').innerHTML += `<p>You: ${message}</p>`;
+            document.getElementById('chatbox').innerHTML += `<p>Bot: ${dat.response}</p>`;
+
+        }
+    </script>
+    
+</body>
+</html>
