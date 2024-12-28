@@ -11,6 +11,8 @@
     <input id="message" placeholder="type your message" />
     <button onclick="sendMessage()">Send</button>
 
+    <p>Feedback:</p>
+    <button on>good</button>
     <script>
         async function sendMessage() {
             const message = document.getElementById("message").value;
@@ -23,7 +25,8 @@
             document.getElementById('chatbox').innerHTML += `<p>You: ${message}</p>`;
             document.getElementById('chatbox').innerHTML += `<p>Bot: ${dat.response}</p>`;
 
-        }
+        };
+
     </script>
     
 </body>

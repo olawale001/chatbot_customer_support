@@ -19,6 +19,24 @@
             "tag": "hours",
             "patterns": ["What are your hours?", "When are you open?"],
             "response": ["We are open 9am-5pm, Monday to friday."]
+        },
+        {
+            "tag": "food",
+            "patterns": ["I want to order food", "Can i get food"],
+            "response": ["Sure! What would you like to order?"],
+            "context_set": "ordering"
+        },
+        {
+            "tag": "food_menu",
+            "patterns": ["What do you have?", "Show me the menu"],
+            "response": ["We have pizza, burger, and pasta."],
+            "context_filter": "ordering"
+        },
+        {
+            "tag": "fallback",
+            "patterns": [],
+            "response": ["I'm sorry, I don't understand that.", "Could you please rephrase?"]
         }
+
     ]
 }

@@ -5,9 +5,11 @@ import random
 import nltk
 from nltk.stem import WordNetLemmatizer
 
+
 tf.config.set_visible_devices([], 'GPU')
-nltk.download("all")
-# nltk.download("wordnet")
+nltk.download('punkt_tab')
+nltk.download("wordnet")
+
 
 with open('intents.json', 'r') as file:
     intents = json.load(file)
@@ -25,8 +27,8 @@ for intent in intents['intents']:
         if intent['tag'] not in classes:
             classes.append(intent['tag'])
 
-words = [lemmatizer.lemmatize(w.lower()) for w in words if w.isalnum()]
-words = sorted(set(words))
+words = sorted(set([lemmatizer.lemmatize(w.lower()) for w in words if w.isalnum()]))
+# words = sorted(set(words))
 classes = sorted(set(classes))
 
 training = []
@@ -65,3 +67,5 @@ import pickle
 
 pickle.dump(words, open('words.pkl', 'wb'))
 pickle.dump(classes, open('classes.pkl', 'wb'))
+
+print("Model training complete and saved!")

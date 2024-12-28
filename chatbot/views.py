@@ -38,31 +38,48 @@ def predict_class(sentence):
     results.sort(key=lambda x: x[1], reverse=True)
     return [{"intent": classes[r[0]], "probability": str(r[1])} for r in results]
 
-def get_response(intent_list, intent_json):
+def get_response(intent_list, intents_json):
+    if not intent_list:
+        for i in intents_json['intents']:    
+            if i['tag'] == 'fallback':
+                return random.choice(i['response'])
+
+    tag = intent_list[0]['intent']            
+    for i in intents_json['intents']:
+        if i['tag'] == tag:
+            return random.choice(i['response'])
+
+def get_response_with_context(intent_list, intent_json, session_context):
     tag = intent_list[0]["intent"]
+    context_set = None
+
     for i in intent_json["intents"]:
         if i['tag'] == tag:
-            return random.choice(i['responses'])
-        
+            context_set = i.get('context_set', None)
+            if not i.get('context_filter') or session_context == i.get('context_filter'):
+               return random.choice(i['responses']), context_set
 
-# def chatbot_response(request):
-#     if request.method == 'POST':
-#         user_message = request.POST.get('message', '')
-#         predicted_intents = predict_class(user_message)
-#         response = get_response(predicted_intents, intents)
-#         return JsonResponse({"response": response})
-#     return JsonResponse({"error": "Invalid request"}, status=400)
+    return "I am not sure how to response to that", context_set           
+        
 
 def chatbot_response(request):
     if request.method == 'POST':
-        user_message = request.POST.get('message', '').strip()
-        if not user_message:
-            return JsonResponse({"error": "Message cannot be empty"}, status=400)
-        
-        try:
-            predicted_intents = predict_class(user_message)
-            response = get_response(predicted_intents, intents)
-            return JsonResponse({"response": response})
-        except FileNotFoundError as e:
-            return JsonResponse({"error": str(e)}, status=500)
+        user_message = request.POST.get('message', '')
+        session_context = request.session.get('context', None)
+        user_feedback = request.POST.get('feedback', None)
+
+        if user_feedback:
+            with open('feedback.txt', 'a') as file:
+                file.write(f"{user_message}: {user_feedback}\n")
+
+            return JsonResponse({"response": "Thanks for your feedback"})    
+
+
+        predicted_intents = predict_class(user_message)
+        response, new_context = get_response_with_context(predicted_intents, intents, session_context)
+
+        if new_context:
+            request.session['context'] = new_context
+
+        return JsonResponse({"response": response})
     return JsonResponse({"error": "Invalid request"}, status=400)
